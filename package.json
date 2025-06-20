@@ -2,15 +2,15 @@
 	"name": "sui-svelte",
 	"version": "1.0.0",
 	"description": "A comprehensive Svelte library for building dApps on the Sui blockchain",
-	"author": "Your Name <your.email@example.com>",
+	"author": "AguaPotavel <ruancarlosmeira@gmail.com>",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/your-username/sui-svelte.git"
+		"url": "https://github.com/AguaPotavel/sui-svelte-dapp"
 	},
-	"homepage": "https://github.com/your-username/sui-svelte#readme",
+	"homepage": "https://github.com/AguaPotavel/sui-svelte-dapp#readme",
 	"bugs": {
-		"url": "https://github.com/your-username/sui-svelte/issues"
+		"url": "https://github.com/AguaPotavel/sui-svelte-dapp/issues"
 	},
 	"scripts": {
 		"dev": "vite dev",
