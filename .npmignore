@@ -1,0 +1,35 @@
+# Development files
+src/routes/
+.svelte-kit/
+build/
+node_modules/
+
+# Development configuration
+vite.config.ts
+svelte.config.js
+tsconfig.json
+eslint.config.js
+
+# Development dependencies
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Git and editor files
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Documentation and examples (keep README)
+CONTRIBUTING.md
+
+# Test files
+**/*.test.*
+**/*.spec.*
+
+# Temporary files
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
