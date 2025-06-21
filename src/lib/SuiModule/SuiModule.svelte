@@ -70,47 +70,52 @@
 		});
 	};
 
-	export const signMessage = async (message: string | Uint8Array): Promise<{ signature: string; messageBytes: string }> => {
+	export const signMessage = async (
+		message: string | Uint8Array
+	): Promise<{ signature: string; messageBytes: string }> => {
 		ensureCallable();
-		
+
+		console.log('walletAdapter', walletAdapter);
+
+		// Check if wallet supports message signing
+		if (!walletAdapter!!.signMessage) {
+			throw new Error(
+				'This wallet does not support message signing. Please try a different wallet or use signAndExecuteTransaction instead.'
+			);
+		}
+
 		// Convert string to Uint8Array if needed
-		const messageBytes = typeof message === 'string' 
-			? new TextEncoder().encode(message)
-			: message;
-		
-		const result = await walletAdapter!!.signMessage({
+		const messageBytes = typeof message === 'string' ? new TextEncoder().encode(message) : message;
+
+		const result = await walletAdapter!!.signPersonalMessage({
 			account: account.value!!,
 			message: messageBytes
 		});
-		
+
 		return {
 			signature: result.signature,
-			messageBytes: Array.from(messageBytes).map(b => b.toString(16).padStart(2, '0')).join('')
+			messageBytes: Array.from(messageBytes)
+				.map((b) => b.toString(16).padStart(2, '0'))
+				.join('')
 		};
+	};
+
+	export const canSignMessage = (): boolean => {
+		if (status !== ConnectionStatus.CONNECTED || !walletAdapter) {
+			return false;
+		}
+
+		return typeof walletAdapter.signMessage === 'function';
 	};
 
 	const getAvailableWallets = (defaultWallets: IDefaultWallet[]): IWallet[] => {
 		const walletAdapters = detectWalletAdapters();
 
-		// Debug: log detected wallets with full info
-		console.log(
-			'Detected wallet adapters:',
-			walletAdapters.map((w) => ({ name: w.name, icon: w.icon }))
-		);
-		console.log(
-			'Default wallets:',
-			defaultWallets.map((w) => w.name)
-		);
-
 		const availableWallets = defaultWallets
 			.map((item) => {
 				const foundAdapter = walletAdapters.find((walletAdapter) => {
 					// Check exact name match or common aliases
-					return (
-						walletAdapter.name === item.name ||
-						(item.name === 'Sui Wallet' && walletAdapter.name === 'Slush') ||
-						(item.name === 'Slush' && walletAdapter.name === 'Sui Wallet')
-					);
+					return item.name.includes(walletAdapter.name);
 				});
 
 				return {
@@ -121,33 +126,7 @@
 			})
 			.filter((item) => item.installed == true);
 
-		// Also check for any adapters not in default list (like Slush with different names)
-		const extraWallets = walletAdapters
-			.filter((adapter) => {
-				// Don't include if already matched in default wallets
-				const isAlreadyMatched = defaultWallets.some(
-					(dw) =>
-						dw.name === adapter.name ||
-						(dw.name === 'Sui Wallet' && adapter.name === 'Slush') ||
-						(dw.name === 'Slush' && adapter.name === 'Sui Wallet')
-				);
-				return !isAlreadyMatched;
-			})
-			.map((adapter) => ({
-				name: adapter.name,
-				iconUrl: adapter.icon || '',
-				downloadUrl: '',
-				adapter: adapter,
-				installed: true
-			}));
-
-		const allWallets = [...availableWallets, ...extraWallets];
-		console.log(
-			'Final available wallets:',
-			allWallets.map((w) => w.name)
-		);
-
-		return allWallets;
+		return availableWallets;
 	};
 
 	const detectWalletAdapters = (): IWalletAdapter[] => {
@@ -156,11 +135,6 @@
 
 		// Give a small delay for wallets to register
 		const walletAdapters = walletRadar.getDetectedWalletAdapters();
-
-		// Also check window object for Slush-specific registration
-		if (typeof window !== 'undefined' && (window as any).slush) {
-			console.log('Found Slush wallet in window object');
-		}
 
 		walletRadar.deactivate();
 

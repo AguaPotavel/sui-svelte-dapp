@@ -1,12 +1,15 @@
 <script lang="ts">
-	import { SuiModule, ConnectButton, account, connectWithModal, disconnect, signAndExecuteTransaction } from '$lib';
+	import { SuiModule, ConnectButton, account, connectWithModal, disconnect, signAndExecuteTransaction, signMessage, canSignMessage } from '$lib';
 	import { Transaction } from '@mysten/sui/transactions';
 	import { WalletRadar } from '@suiet/wallet-sdk';
 	
 	let transactionResult = $state<any>(null);
+	let signatureResult = $state<any>(null);
 	let isLoading = $state(false);
+	let isSigningMessage = $state(false);
 	let error = $state<string | null>(null);
 	let detectedWallets = $state<string[]>([]);
+	let message = $state('Hello, Sui blockchain!');
 
 	const testTransaction = async () => {
 		if (!account.value) {
@@ -35,9 +38,30 @@
 		}
 	};
 
+	const testSignMessage = async () => {
+		if (!account.value) {
+			error = 'Please connect your wallet first';
+			return;
+		}
+
+		isSigningMessage = true;
+		error = null;
+		signatureResult = null;
+
+		try {
+			const result = await signMessage(message);
+			signatureResult = result;
+		} catch (err: any) {
+			error = err.message || 'Message signing failed';
+		} finally {
+			isSigningMessage = false;
+		}
+	};
+
 	const onConnect = () => {
 		error = null;
 		transactionResult = null;
+		signatureResult = null;
 	};
 
 	const checkDetectedWallets = () => {
@@ -100,6 +124,56 @@
 			{/if}
 		</div>
 
+		<div class="message-section">
+			<h2>Message Signing</h2>
+			{#if account.value}
+				{#if canSignMessage()}
+					<div class="message-input">
+						<label for="message">Message to sign:</label>
+						<input 
+							id="message"
+							type="text" 
+							bind:value={message}
+							placeholder="Enter message to sign"
+							class="message-field"
+						/>
+					</div>
+					<button 
+						class="sign-btn" 
+						onclick={testSignMessage}
+						disabled={isSigningMessage}
+					>
+						{isSigningMessage ? 'Signing Message...' : 'Sign Message'}
+					</button>
+				{:else}
+					<div class="warning-box">
+						<h4>⚠️ Message Signing Not Supported</h4>
+						<p>Your current wallet does not support message signing. This feature requires a wallet that implements the <code>sui:signMessage</code> standard.</p>
+						<p><strong>Wallets that support message signing:</strong></p>
+						<ul>
+							<li>Suiet Wallet (latest version)</li>
+							<li>Sui Wallet (official)</li>
+							<li>Martian Wallet</li>
+						</ul>
+						<p>Please try connecting with a different wallet or check if your wallet has updates available.</p>
+					</div>
+				{/if}
+			{:else}
+				<p class="warning">Connect your wallet to sign messages</p>
+			{/if}
+
+			{#if signatureResult}
+				<div class="result">
+					<h4>Signature Result:</h4>
+					<div class="signature-details">
+						<p><strong>Original Message:</strong> {message}</p>
+						<p><strong>Message Bytes:</strong> <code>{signatureResult.messageBytes}</code></p>
+						<p><strong>Signature:</strong> <code class="signature">{signatureResult.signature}</code></p>
+					</div>
+				</div>
+			{/if}
+		</div>
+
 		<div class="actions-section">
 			<h2>Available Actions</h2>
 			<div class="action-buttons">
@@ -140,7 +214,7 @@
 		margin-bottom: 0.5rem;
 	}
 
-	.wallet-section, .transaction-section, .actions-section {
+	.wallet-section, .transaction-section, .message-section, .actions-section {
 		background: #f8fafc;
 		border: 1px solid #e2e8f0;
 		border-radius: 8px;
@@ -287,5 +361,113 @@
 	.detected-wallets li {
 		margin: 0.25rem 0;
 		font-family: monospace;
+	}
+
+	.message-input {
+		margin-bottom: 1rem;
+	}
+
+	.message-input label {
+		display: block;
+		margin-bottom: 0.5rem;
+		font-weight: 600;
+		color: #374151;
+	}
+
+	.message-field {
+		width: 100%;
+		padding: 0.75rem;
+		border: 1px solid #d1d5db;
+		border-radius: 6px;
+		font-size: 1rem;
+		font-family: inherit;
+		transition: border-color 0.2s;
+	}
+
+	.message-field:focus {
+		outline: none;
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	.sign-btn {
+		background: #8b5cf6;
+		color: white;
+		border: none;
+		padding: 0.75rem 1.5rem;
+		border-radius: 6px;
+		font-size: 1rem;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.sign-btn:hover:not(:disabled) {
+		background: #7c3aed;
+	}
+
+	.sign-btn:disabled {
+		background: #9ca3af;
+		cursor: not-allowed;
+	}
+
+	.signature-details {
+		background: white;
+		padding: 1rem;
+		border-radius: 4px;
+		margin-top: 0.5rem;
+	}
+
+	.signature-details p {
+		margin: 0.5rem 0;
+		word-break: break-all;
+	}
+
+	.signature-details code {
+		background: #f3f4f6;
+		padding: 0.25rem 0.5rem;
+		border-radius: 3px;
+		font-size: 0.8rem;
+	}
+
+	.signature {
+		display: block;
+		max-width: 100%;
+		overflow-wrap: break-word;
+	}
+
+	.warning-box {
+		background: #fef3c7;
+		border: 1px solid #f59e0b;
+		border-radius: 6px;
+		padding: 1.5rem;
+		color: #92400e;
+	}
+
+	.warning-box h4 {
+		margin-top: 0;
+		margin-bottom: 1rem;
+		color: #b45309;
+	}
+
+	.warning-box p {
+		margin: 0.75rem 0;
+		line-height: 1.6;
+	}
+
+	.warning-box ul {
+		margin: 0.5rem 0;
+		padding-left: 1.5rem;
+	}
+
+	.warning-box li {
+		margin: 0.25rem 0;
+	}
+
+	.warning-box code {
+		background: #fbbf24;
+		color: #78350f;
+		padding: 0.125rem 0.25rem;
+		border-radius: 3px;
+		font-size: 0.875rem;
 	}
 </style>
