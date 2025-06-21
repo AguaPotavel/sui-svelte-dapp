@@ -58,56 +58,56 @@
 	};
 </script>
 
-<dialog bind:this={connectModal} class="backdrop:bg-black/50">
+<dialog bind:this={connectModal} class="connect-modal">
 	{#if isCustom}
 		<slot />
 	{:else}
-		<div class="fixed inset-0 flex items-center justify-center p-4">
-			<div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md animate-in fade-in-0 zoom-in-95 duration-200">
-				<div class="flex justify-between items-center mb-6">
-					<h2 class="text-2xl font-bold text-gray-900">Connect Wallet</h2>
+		<div class="modal-overlay">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-title">Connect Wallet</h2>
 					<button
 						aria-label="Close"
-						class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+						class="close-button"
 						onclick={onClose}
 					>
-						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg class="close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
 						</svg>
 					</button>
 				</div>
 				
 				{#if availableWallets.length == 0}
-					<div class="text-center py-8">
-						<div class="text-gray-500 mb-4">No wallets detected</div>
-						<p class="text-sm text-gray-600">
+					<div class="no-wallets">
+						<div class="no-wallets-message">No wallets detected</div>
+						<p class="no-wallets-text">
 							Please install a Sui wallet. We recommend 
 							<a
 								href="https://chromewebstore.google.com/detail/suiet-sui-wallet/khpkpbbcccdmmclmpigdgddabeilkdpd"
 								target="_blank"
-								class="text-blue-600 hover:text-blue-800 font-semibold underline"
+								class="wallet-link"
 							>
 								Suiet
 							</a>.
 						</p>
 					</div>
 				{:else}
-					<div class="space-y-3">
+					<div class="wallet-list">
 						{#each availableWallets as wallet (wallet.name)}
 							<button
-								class="w-full flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 group"
+								class="wallet-button"
 								onclick={() => onSelected(wallet)}
 							>
 								<img 
 									src={wallet.iconUrl} 
 									alt={wallet.name}
-									class="w-10 h-10 rounded-lg flex-shrink-0"
+									class="wallet-icon"
 								/>
-								<div class="flex-1 text-left">
-									<div class="font-semibold text-gray-900 group-hover:text-blue-900">{wallet.name}</div>
-									<div class="text-sm text-gray-500">Click to connect</div>
+								<div class="wallet-info">
+									<div class="wallet-name">{wallet.name}</div>
+									<div class="wallet-description">Click to connect</div>
 								</div>
-								<svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg class="wallet-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
 								</svg>
 							</button>
@@ -120,14 +120,166 @@
 </dialog>
 
 <style>
-	dialog {
+	.connect-modal {
 		padding: 0;
 		border: none;
 		border-radius: 0;
 		background: transparent;
 	}
 	
-	dialog::backdrop {
-		background-color: rgb(0 0 0 / 0.5);
+	.connect-modal::backdrop {
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+	
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+	}
+	
+	.modal-content {
+		background: white;
+		border-radius: 0.75rem;
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+		padding: 1.5rem;
+		width: 100%;
+		max-width: 28rem;
+		animation: fadeInZoom 0.2s ease-out;
+	}
+	
+	@keyframes fadeInZoom {
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+	
+	.modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+	}
+	
+	.modal-title {
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: #111827;
+		margin: 0;
+	}
+	
+	.close-button {
+		color: #9ca3af;
+		padding: 0.25rem;
+		border-radius: 9999px;
+		border: none;
+		background: none;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+	
+	.close-button:hover {
+		color: #4b5563;
+		background-color: #f3f4f6;
+	}
+	
+	.close-icon {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+	
+	.no-wallets {
+		text-align: center;
+		padding: 2rem 0;
+	}
+	
+	.no-wallets-message {
+		color: #6b7280;
+		margin-bottom: 1rem;
+	}
+	
+	.no-wallets-text {
+		font-size: 0.875rem;
+		color: #4b5563;
+		margin: 0;
+	}
+	
+	.wallet-link {
+		color: #2563eb;
+		font-weight: 600;
+		text-decoration: underline;
+	}
+	
+	.wallet-link:hover {
+		color: #1d4ed8;
+	}
+	
+	.wallet-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	
+	.wallet-button {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1rem;
+		border-radius: 0.5rem;
+		border: 1px solid #e5e7eb;
+		background: white;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+	
+	.wallet-button:hover {
+		border-color: #93c5fd;
+		background-color: #eff6ff;
+	}
+	
+	.wallet-icon {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.5rem;
+		flex-shrink: 0;
+	}
+	
+	.wallet-info {
+		flex: 1;
+		text-align: left;
+	}
+	
+	.wallet-name {
+		font-weight: 600;
+		color: #111827;
+		transition: color 0.2s ease;
+	}
+	
+	.wallet-button:hover .wallet-name {
+		color: #1e3a8a;
+	}
+	
+	.wallet-description {
+		font-size: 0.875rem;
+		color: #6b7280;
+	}
+	
+	.wallet-arrow {
+		width: 1.25rem;
+		height: 1.25rem;
+		color: #9ca3af;
+		transition: color 0.2s ease;
+	}
+	
+	.wallet-button:hover .wallet-arrow {
+		color: #2563eb;
 	}
 </style>
