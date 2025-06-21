@@ -75,8 +75,6 @@
 	): Promise<{ signature: string; messageBytes: string }> => {
 		ensureCallable();
 
-		console.log('walletAdapter', walletAdapter);
-
 		// Check if wallet supports message signing
 		if (!walletAdapter!!.signMessage) {
 			throw new Error(
