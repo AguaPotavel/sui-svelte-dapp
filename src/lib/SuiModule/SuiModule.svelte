@@ -70,6 +70,25 @@
 		});
 	};
 
+	export const signMessage = async (message: string | Uint8Array): Promise<{ signature: string; messageBytes: string }> => {
+		ensureCallable();
+		
+		// Convert string to Uint8Array if needed
+		const messageBytes = typeof message === 'string' 
+			? new TextEncoder().encode(message)
+			: message;
+		
+		const result = await walletAdapter!!.signMessage({
+			account: account.value!!,
+			message: messageBytes
+		});
+		
+		return {
+			signature: result.signature,
+			messageBytes: Array.from(messageBytes).map(b => b.toString(16).padStart(2, '0')).join('')
+		};
+	};
+
 	const getAvailableWallets = (defaultWallets: IDefaultWallet[]): IWallet[] => {
 		const walletAdapters = detectWalletAdapters();
 
