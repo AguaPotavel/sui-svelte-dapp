@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2025-06-22
+
+### Added
+- **Auto-Connect Feature**: New `autoConnect` boolean prop for SuiModule component
+- Automatic wallet persistence using localStorage when autoConnect is enabled
+- Automatic reconnection on page load with saved wallet preferences
+- Automatic cleanup of saved wallet data on user disconnect
+
+### Enhanced
+- SuiModule component now supports seamless user experience with persistent wallet connections
+- Improved user retention by automatically reconnecting previously connected wallets
+- Enhanced disconnect functionality to properly clear saved connection data
+
+### Technical
+- Added browser environment detection for localStorage operations
+- Implemented connection data serialization and deserialization
+- Added effect-based auto-connection logic that runs on component initialization
+
 ## [1.0.0] - 2025-01-20
 
 ### Added

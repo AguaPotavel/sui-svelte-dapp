@@ -11,6 +11,7 @@
 	import type { IdentifierString, WalletAccount } from '@wallet-standard/core';
 	import ConnectModal, { type IConnectModal } from '../ConnectModal/ConnectModal.svelte';
 	import type { SuiSignAndExecuteTransactionOutput } from '@mysten/wallet-standard';
+	import { browser } from '$app/environment';
 
 	let walletAdapter = $state<IWalletAdapter>();
 	let status = $state<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
@@ -18,6 +19,41 @@
 	let connectModal = $state<IConnectModal>();
 	export let getConnectModal = () => connectModal;
 	let _onConnect = $state<() => void>(() => {});
+	let _autoConnect = $state<boolean>(false);
+
+	const STORAGE_KEY = 'sui-module-connection';
+
+	const saveConnectionData = (walletName: string) => {
+		if (browser && _autoConnect) {
+			localStorage.setItem(STORAGE_KEY, JSON.stringify({ walletName, autoConnect: true }));
+		}
+	};
+
+	const getConnectionData = () => {
+		if (browser) {
+			const data = localStorage.getItem(STORAGE_KEY);
+			return data ? JSON.parse(data) : null;
+		}
+		return null;
+	};
+
+	const clearConnectionData = () => {
+		if (browser) {
+			localStorage.removeItem(STORAGE_KEY);
+		}
+	};
+
+	const autoConnectWallet = async () => {
+		if (!_autoConnect || !browser) return;
+
+		const connectionData = getConnectionData();
+		if (!connectionData?.autoConnect) return;
+
+		const wallet = availableWallets.find((w) => w.name === connectionData.walletName);
+		if (wallet && wallet.installed) {
+			await connect(wallet);
+		}
+	};
 
 	export const account = {
 		get value() {
@@ -47,6 +83,7 @@
 				await walletAdapter.connect();
 				account.setAccount(walletAdapter.accounts[0]);
 				status = ConnectionStatus.CONNECTED;
+				saveConnectionData(wallet.name);
 				_onConnect();
 			} catch {
 				status = ConnectionStatus.DISCONNECTED;
@@ -57,6 +94,8 @@
 	export const disconnect = () => {
 		walletAdapter?.disconnect();
 		account.removeAccount();
+		status = ConnectionStatus.DISCONNECTED;
+		clearConnectionData();
 	};
 
 	export const signAndExecuteTransaction = async (
@@ -151,12 +190,20 @@
 <script lang="ts">
 	interface IProps {
 		onConnect?: () => void;
+		autoConnect?: boolean;
 	}
 
-	const { onConnect }: IProps = $props();
+	const { onConnect, autoConnect = false }: IProps = $props();
 	if (onConnect) {
 		_onConnect = onConnect;
 	}
+	_autoConnect = autoConnect;
+
+	$effect(() => {
+		if (browser && _autoConnect) {
+			autoConnectWallet();
+		}
+	});
 </script>
 
 <ConnectModal isCustom={$$slots.modal ? true : false} bind:this={connectModal} {availableWallets}>

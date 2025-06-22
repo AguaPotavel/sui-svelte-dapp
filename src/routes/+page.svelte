@@ -1,8 +1,17 @@
 <script lang="ts">
-	import { SuiModule, ConnectButton, account, connectWithModal, disconnect, signAndExecuteTransaction, signMessage, canSignMessage } from '$lib';
+	import {
+		SuiModule,
+		ConnectButton,
+		account,
+		connectWithModal,
+		disconnect,
+		signAndExecuteTransaction,
+		signMessage,
+		canSignMessage
+	} from '$lib';
 	import { Transaction } from '@mysten/sui/transactions';
 	import { WalletRadar } from '@suiet/wallet-sdk';
-	
+
 	let transactionResult = $state<any>(null);
 	let signatureResult = $state<any>(null);
 	let isLoading = $state(false);
@@ -24,10 +33,7 @@
 		try {
 			// Create a simple test transaction (transfer 0 SUI to self)
 			const tx = new Transaction();
-			tx.transferObjects(
-				[tx.splitCoins(tx.gas, [0])],
-				account.value.address
-			);
+			tx.transferObjects([tx.splitCoins(tx.gas, [0])], account.value.address);
 
 			const result = await signAndExecuteTransaction(tx);
 			transactionResult = result;
@@ -68,13 +74,13 @@
 		const walletRadar = new WalletRadar();
 		walletRadar.activate();
 		const adapters = walletRadar.getDetectedWalletAdapters();
-		detectedWallets = adapters.map(adapter => adapter.name);
+		detectedWallets = adapters.map((adapter) => adapter.name);
 		walletRadar.deactivate();
 		console.log('Manual wallet check:', detectedWallets);
 	};
 </script>
 
-<SuiModule {onConnect}>
+<SuiModule {onConnect} autoConnect={true}>
 	<div class="container">
 		<header>
 			<h1>Sui Svelte Library Test</h1>
@@ -84,7 +90,7 @@
 		<div class="wallet-section">
 			<h2>Wallet Connection</h2>
 			<ConnectButton class="connect-btn" />
-			
+
 			{#if account.value}
 				<div class="account-info">
 					<h3>Connected Account</h3>
@@ -98,11 +104,7 @@
 		<div class="transaction-section">
 			<h2>Transaction Testing</h2>
 			{#if account.value}
-				<button 
-					class="test-btn" 
-					onclick={testTransaction}
-					disabled={isLoading}
-				>
+				<button class="test-btn" onclick={testTransaction} disabled={isLoading}>
 					{isLoading ? 'Signing Transaction...' : 'Test Transaction (0 SUI transfer)'}
 				</button>
 			{:else}
@@ -130,32 +132,34 @@
 				{#if canSignMessage()}
 					<div class="message-input">
 						<label for="message">Message to sign:</label>
-						<input 
+						<input
 							id="message"
-							type="text" 
+							type="text"
 							bind:value={message}
 							placeholder="Enter message to sign"
 							class="message-field"
 						/>
 					</div>
-					<button 
-						class="sign-btn" 
-						onclick={testSignMessage}
-						disabled={isSigningMessage}
-					>
+					<button class="sign-btn" onclick={testSignMessage} disabled={isSigningMessage}>
 						{isSigningMessage ? 'Signing Message...' : 'Sign Message'}
 					</button>
 				{:else}
 					<div class="warning-box">
 						<h4>⚠️ Message Signing Not Supported</h4>
-						<p>Your current wallet does not support message signing. This feature requires a wallet that implements the <code>sui:signMessage</code> standard.</p>
+						<p>
+							Your current wallet does not support message signing. This feature requires a wallet
+							that implements the <code>sui:signMessage</code> standard.
+						</p>
 						<p><strong>Wallets that support message signing:</strong></p>
 						<ul>
 							<li>Suiet Wallet (latest version)</li>
 							<li>Sui Wallet (official)</li>
 							<li>Martian Wallet</li>
 						</ul>
-						<p>Please try connecting with a different wallet or check if your wallet has updates available.</p>
+						<p>
+							Please try connecting with a different wallet or check if your wallet has updates
+							available.
+						</p>
 					</div>
 				{/if}
 			{:else}
@@ -168,7 +172,9 @@
 					<div class="signature-details">
 						<p><strong>Original Message:</strong> {message}</p>
 						<p><strong>Message Bytes:</strong> <code>{signatureResult.messageBytes}</code></p>
-						<p><strong>Signature:</strong> <code class="signature">{signatureResult.signature}</code></p>
+						<p>
+							<strong>Signature:</strong> <code class="signature">{signatureResult.signature}</code>
+						</p>
 					</div>
 				</div>
 			{/if}
@@ -178,10 +184,11 @@
 			<h2>Available Actions</h2>
 			<div class="action-buttons">
 				<button class="action-btn" onclick={connectWithModal}>Connect with Modal</button>
-				<button class="action-btn" onclick={disconnect} disabled={!account.value}>Disconnect</button>
+				<button class="action-btn" onclick={disconnect} disabled={!account.value}>Disconnect</button
+				>
 				<button class="action-btn" onclick={checkDetectedWallets}>Check Detected Wallets</button>
 			</div>
-			
+
 			{#if detectedWallets.length > 0}
 				<div class="detected-wallets">
 					<h4>Manually Detected Wallets:</h4>
@@ -214,7 +221,10 @@
 		margin-bottom: 0.5rem;
 	}
 
-	.wallet-section, .transaction-section, .message-section, .actions-section {
+	.wallet-section,
+	.transaction-section,
+	.message-section,
+	.actions-section {
 		background: #f8fafc;
 		border: 1px solid #e2e8f0;
 		border-radius: 8px;

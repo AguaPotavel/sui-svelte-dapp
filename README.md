@@ -11,6 +11,7 @@ A comprehensive Svelte library for building dApps on the Sui blockchain. This li
 - 🎯 **Type-Safe** - Full TypeScript support
 - ⚡ **Svelte 5 Ready** - Built with the latest Svelte features (runes, snippets)
 - 🎛️ **Customizable** - Easy to style and integrate with your design system
+- 🔄 **Auto-Connect** - Automatically reconnect users with saved wallet preferences
 
 ## Installation
 
@@ -47,7 +48,22 @@ Wrap your app with the `SuiModule` component:
 </SuiModule>
 ```
 
-### 2. Using the Connect Button
+### 2. Auto-Connect Setup
+
+Enable automatic wallet connection to reconnect users automatically:
+
+```svelte
+<script>
+	import { SuiModule, ConnectButton } from 'sui-svelte-dapp-dapp';
+</script>
+
+<SuiModule autoConnect={true}>
+	<h1>My Sui dApp</h1>
+	<ConnectButton />
+</SuiModule>
+```
+
+### 3. Using the Connect Button
 
 The simplest way to add wallet connection:
 
@@ -59,7 +75,7 @@ The simplest way to add wallet connection:
 <ConnectButton class="my-custom-class" style="color: blue;" />
 ```
 
-### 3. Custom Connection Logic
+### 4. Custom Connection Logic
 
 ```svelte
 <script>
@@ -107,6 +123,7 @@ The main wrapper component that provides wallet connection state and functionali
 **Props:**
 
 - `onConnect?: () => void` - Callback when wallet successfully connects
+- `autoConnect?: boolean` - Automatically connect using saved wallet data (default: false)
 
 ### ConnectButton
 
@@ -448,6 +465,13 @@ pnpm run prepack
    ```
 
 ## Changelog
+
+### v1.1.4
+
+- **NEW**: Auto-Connect feature with `autoConnect` prop
+- Automatic wallet persistence using localStorage
+- Seamless reconnection on page load
+- Enhanced disconnect functionality with data cleanup
 
 ### v1.1.2
 
