@@ -38,12 +38,12 @@ Wrap your app with the `SuiModule` component:
 
 ```svelte
 <script>
-  import { SuiModule, ConnectButton } from 'sui-svelte-dapp-dapp';
+	import { SuiModule, ConnectButton } from 'sui-svelte-dapp-dapp';
 </script>
 
 <SuiModule>
-  <h1>My Sui dApp</h1>
-  <ConnectButton />
+	<h1>My Sui dApp</h1>
+	<ConnectButton />
 </SuiModule>
 ```
 
@@ -53,7 +53,7 @@ The simplest way to add wallet connection:
 
 ```svelte
 <script>
-  import { ConnectButton } from 'sui-svelte-dapp-dapp';
+	import { ConnectButton } from 'sui-svelte-dapp-dapp';
 </script>
 
 <ConnectButton class="my-custom-class" style="color: blue;" />
@@ -63,24 +63,24 @@ The simplest way to add wallet connection:
 
 ```svelte
 <script>
-  import { SuiModule, connectWithModal, disconnect, account } from 'sui-svelte-dapp-dapp';
-  
-  const handleConnect = async () => {
-    await connectWithModal();
-  };
-  
-  const handleDisconnect = () => {
-    disconnect();
-  };
+	import { SuiModule, connectWithModal, disconnect, account } from 'sui-svelte-dapp-dapp';
+
+	const handleConnect = async () => {
+		await connectWithModal();
+	};
+
+	const handleDisconnect = () => {
+		disconnect();
+	};
 </script>
 
 <SuiModule>
-  {#if account.value}
-    <p>Connected: {account.value.address}</p>
-    <button onclick={handleDisconnect}>Disconnect</button>
-  {:else}
-    <button onclick={handleConnect}>Connect Wallet</button>
-  {/if}
+	{#if account.value}
+		<p>Connected: {account.value.address}</p>
+		<button onclick={handleDisconnect}>Disconnect</button>
+	{:else}
+		<button onclick={handleConnect}>Connect Wallet</button>
+	{/if}
 </SuiModule>
 ```
 
@@ -92,19 +92,20 @@ The main wrapper component that provides wallet connection state and functionali
 
 ```svelte
 <script>
-  import { SuiModule } from 'sui-svelte-dapp';
-  
-  const onConnect = () => {
-    console.log('Wallet connected!');
-  };
+	import { SuiModule } from 'sui-svelte-dapp';
+
+	const onConnect = () => {
+		console.log('Wallet connected!');
+	};
 </script>
 
 <SuiModule {onConnect}>
-  <!-- Your app content -->
+	<!-- Your app content -->
 </SuiModule>
 ```
 
 **Props:**
+
 - `onConnect?: () => void` - Callback when wallet successfully connects
 
 ### ConnectButton
@@ -113,16 +114,14 @@ A pre-styled button that handles wallet connection/disconnection.
 
 ```svelte
 <script>
-  import { ConnectButton } from 'sui-svelte-dapp';
+	import { ConnectButton } from 'sui-svelte-dapp';
 </script>
 
-<ConnectButton 
-  class="btn btn-primary" 
-  style="padding: 12px 24px;" 
-/>
+<ConnectButton class="btn btn-primary" style="padding: 12px 24px;" />
 ```
 
 **Props:**
+
 - `class?: string` - CSS classes to apply
 - `style?: string` - Inline styles
 
@@ -132,22 +131,18 @@ A modal component for wallet selection (used internally by other components).
 
 ```svelte
 <script>
-  import { ConnectModal } from 'sui-svelte-dapp';
-  
-  let modal;
-  let availableWallets = []; // Your wallet list
-  
-  const openModal = async () => {
-    const selectedWallet = await modal.openAndWaitForResponse();
-    console.log('Selected:', selectedWallet);
-  };
+	import { ConnectModal } from 'sui-svelte-dapp';
+
+	let modal;
+	let availableWallets = []; // Your wallet list
+
+	const openModal = async () => {
+		const selectedWallet = await modal.openAndWaitForResponse();
+		console.log('Selected:', selectedWallet);
+	};
 </script>
 
-<ConnectModal 
-  bind:this={modal}
-  {availableWallets}
-  isCustom={false}
-/>
+<ConnectModal bind:this={modal} {availableWallets} isCustom={false} />
 ```
 
 ## API Reference
@@ -155,84 +150,89 @@ A modal component for wallet selection (used internally by other components).
 ### Functions
 
 #### `connectWithModal()`
+
 Opens the wallet selection modal and connects to the selected wallet.
 
 ```svelte
 <script>
-  import { connectWithModal } from 'sui-svelte-dapp';
-  
-  const connect = async () => {
-    await connectWithModal();
-  };
+	import { connectWithModal } from 'sui-svelte-dapp';
+
+	const connect = async () => {
+		await connectWithModal();
+	};
 </script>
 ```
 
 #### `connect(wallet: IWallet)`
+
 Connects to a specific wallet directly.
 
 ```svelte
 <script>
-  import { connect } from 'sui-svelte-dapp';
-  
-  const connectToWallet = async (wallet) => {
-    await connect(wallet);
-  };
+	import { connect } from 'sui-svelte-dapp';
+
+	const connectToWallet = async (wallet) => {
+		await connect(wallet);
+	};
 </script>
 ```
 
 #### `disconnect()`
+
 Disconnects the current wallet.
 
 ```svelte
 <script>
-  import { disconnect } from 'sui-svelte-dapp';
-  
-  const handleDisconnect = () => {
-    disconnect();
-  };
+	import { disconnect } from 'sui-svelte-dapp';
+
+	const handleDisconnect = () => {
+		disconnect();
+	};
 </script>
 ```
 
 #### `signAndExecuteTransaction(transaction: Transaction)`
+
 Signs and executes a transaction with the connected wallet.
 
 ```svelte
 <script>
-  import { signAndExecuteTransaction } from 'sui-svelte-dapp';
-  import { Transaction } from '@mysten/sui/transactions';
-  
-  const sendTransaction = async () => {
-    const tx = new Transaction();
-    // ... build your transaction
-    
-    try {
-      const result = await signAndExecuteTransaction(tx);
-      console.log('Transaction result:', result);
-    } catch (error) {
-      console.error('Transaction failed:', error);
-    }
-  };
+	import { signAndExecuteTransaction } from 'sui-svelte-dapp';
+	import { Transaction } from '@mysten/sui/transactions';
+
+	const sendTransaction = async () => {
+		const tx = new Transaction();
+		// ... build your transaction
+
+		try {
+			const result = await signAndExecuteTransaction(tx);
+			console.log('Transaction result:', result);
+		} catch (error) {
+			console.error('Transaction failed:', error);
+		}
+	};
 </script>
 ```
 
 ### State
 
 #### `account`
+
 Reactive account information for the connected wallet.
 
 ```svelte
 <script>
-  import { account } from 'sui-svelte-dapp';
+	import { account } from 'sui-svelte-dapp';
 </script>
 
 {#if account.value}
-  <div>
-    <p>Address: {account.value.address}</p>
-    <p>Label: {account.value.label || 'N/A'}</p>
-    <p>Chains: {account.value.chains.join(', ')}</p>
-  </div>
+	<div>
+		<p>Address: {account.value.address}</p>
+		<p>Label: {account.value.label || 'N/A'}</p>
+		<p>Chains: {account.value.chains.join(', ')}</p>
+	</div>
 {:else}
-  <p>No wallet connected</p>
+	<p>No wallet connected</p>
 {/if}
 ```
 
@@ -244,19 +244,19 @@ You can create a custom wallet selection modal:
 
 ```svelte
 <script>
-  import { SuiModule } from 'sui-svelte-dapp';
+	import { SuiModule } from 'sui-svelte-dapp';
 </script>
 
 <SuiModule>
-  <slot name="modal">
-    <!-- Your custom modal content -->
-    <div class="custom-modal">
-      <h2>Choose Your Wallet</h2>
-      <!-- Custom wallet selection UI -->
-    </div>
-  </slot>
-  
-  <!-- Your app content -->
+	<slot name="modal">
+		<!-- Your custom modal content -->
+		<div class="custom-modal">
+			<h2>Choose Your Wallet</h2>
+			<!-- Custom wallet selection UI -->
+		</div>
+	</slot>
+
+	<!-- Your app content -->
 </SuiModule>
 ```
 
@@ -266,21 +266,18 @@ You can create a custom wallet selection modal:
 
 ```svelte
 <script>
-  import { signAndExecuteTransaction, account } from 'sui-svelte-dapp';
-  import { Transaction } from '@mysten/sui/transactions';
-  
-  const transferSui = async (recipient, amount) => {
-    if (!account.value) throw new Error('No wallet connected');
-    
-    const tx = new Transaction();
-    tx.transferObjects(
-      [tx.splitCoins(tx.gas, [amount])],
-      recipient
-    );
-    
-    const result = await signAndExecuteTransaction(tx);
-    return result;
-  };
+	import { signAndExecuteTransaction, account } from 'sui-svelte-dapp';
+	import { Transaction } from '@mysten/sui/transactions';
+
+	const transferSui = async (recipient, amount) => {
+		if (!account.value) throw new Error('No wallet connected');
+
+		const tx = new Transaction();
+		tx.transferObjects([tx.splitCoins(tx.gas, [amount])], recipient);
+
+		const result = await signAndExecuteTransaction(tx);
+		return result;
+	};
 </script>
 ```
 
@@ -288,19 +285,21 @@ You can create a custom wallet selection modal:
 
 ```svelte
 <script>
-  import { signAndExecuteTransaction } from 'sui-svelte-dapp';
-  import { Transaction } from '@mysten/sui/transactions';
-  
-  const callMoveFunction = async () => {
-    const tx = new Transaction();
-    tx.moveCall({
-      target: 'package::module::function',
-      arguments: [/* your arguments */],
-    });
-    
-    const result = await signAndExecuteTransaction(tx);
-    return result;
-  };
+	import { signAndExecuteTransaction } from 'sui-svelte-dapp';
+	import { Transaction } from '@mysten/sui/transactions';
+
+	const callMoveFunction = async () => {
+		const tx = new Transaction();
+		tx.moveCall({
+			target: 'package::module::function',
+			arguments: [
+				/* your arguments */
+			]
+		});
+
+		const result = await signAndExecuteTransaction(tx);
+		return result;
+	};
 </script>
 ```
 
@@ -313,52 +312,52 @@ The components come with **custom CSS styling** (no longer using Tailwind CSS) t
 ```css
 /* Customize the modal overlay */
 :global(.modal-overlay) {
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(4px);
+	background: rgba(0, 0, 0, 0.8);
+	backdrop-filter: blur(4px);
 }
 
 /* Customize the modal content */
 :global(.modal-content) {
-  background: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 16px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 16px;
 }
 
 /* Customize wallet buttons */
 :global(.wallet-button) {
-  background: #2a2a2a;
-  border: 1px solid #444;
-  color: white;
+	background: #2a2a2a;
+	border: 1px solid #444;
+	color: white;
 }
 
 :global(.wallet-button:hover) {
-  border-color: #667eea;
-  background: #333;
+	border-color: #667eea;
+	background: #333;
 }
 ```
 
 ### Custom Connect Button Styling
 
 ```svelte
-<ConnectButton 
-  class="my-connect-btn" 
-  style="background: linear-gradient(45deg, #667eea, #764ba2);"
+<ConnectButton
+	class="my-connect-btn"
+	style="background: linear-gradient(45deg, #667eea, #764ba2);"
 />
 
 <style>
-  :global(.my-connect-btn) {
-    border: none;
-    border-radius: 8px;
-    color: white;
-    padding: 12px 24px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
+	:global(.my-connect-btn) {
+		border: none;
+		border-radius: 8px;
+		color: white;
+		padding: 12px 24px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: transform 0.2s;
+	}
 
-  :global(.my-connect-btn:hover) {
-    transform: translateY(-2px);
-  }
+	:global(.my-connect-btn:hover) {
+		transform: translateY(-2px);
+	}
 </style>
 ```
 
@@ -384,7 +383,7 @@ import type { SuiSignAndExecuteTransactionOutput } from '@mysten/wallet-standard
 
 // All exports are fully typed
 const handleTransaction = async (): Promise<SuiSignAndExecuteTransactionOutput> => {
-  // Type-safe transaction handling
+	// Type-safe transaction handling
 };
 ```
 
@@ -408,8 +407,8 @@ MIT License - see LICENSE file for details.
 
 ## Support
 
-- **Documentation**: [GitHub Repository](https://github.com/your-username/sui-svelte-dapp)
-- **Issues**: [Report bugs](https://github.com/your-username/sui-svelte-dapp/issues)
+- **Documentation**: [GitHub Repository](https://github.com/AguaPotavel/sui-svelte-dapp)
+- **Issues**: [Report bugs](https://github.com/AguaPotavel/sui-svelte-dapp/issues)
 - **Discord**: [Sui Developer Community](https://discord.gg/sui)
 
 ## Development
@@ -430,11 +429,13 @@ pnpm run prepack
 ### Publishing to NPM
 
 1. **Update package details** in `package.json`:
+
    - Change `author` field
-   - Update `repository` URLs  
+   - Update `repository` URLs
    - Verify `name` is available on NPM
 
 2. **Build and test**:
+
    ```bash
    pnpm run prepack
    ./scripts/publish-check.sh
@@ -449,6 +450,7 @@ pnpm run prepack
 ## Changelog
 
 ### v1.1.2
+
 - **BREAKING**: Removed Tailwind CSS dependency - now uses custom CSS
 - Improved modal styling with better animations and visual feedback
 - Better cross-browser compatibility
@@ -456,8 +458,10 @@ pnpm run prepack
 - Enhanced TypeScript definitions
 
 ### v1.0.0
+
 - Initial release
 - Basic wallet connection with components
 - Transaction signing
 - Svelte 5 support
 - TypeScript definitions
+
