@@ -10,8 +10,7 @@ A comprehensive Svelte library for building dApps on the Sui blockchain. This li
 - 🔐 **Secure Transactions** - Built-in transaction signing and execution
 - 🎯 **Type-Safe** - Full TypeScript support
 - ⚡ **Svelte 5 Ready** - Built with the latest Svelte features (runes, snippets)
-- 🛠️ **Headless Mode** - Use your own UI with headless wallet functions
-- 🎛️ **Flexible** - Works with or without UI components
+- 🎛️ **Customizable** - Easy to style and integrate with your design system
 
 ## Installation
 
@@ -237,100 +236,6 @@ Reactive account information for the connected wallet.
 {/if}
 ```
 
-## Headless Mode (New!)
-
-For complete control over your UI, use the headless wallet functions:
-
-### Basic Headless Usage
-
-```javascript
-import {
-  getAvailableWallets,
-  connectToWallet,
-  connectWithModalHeadless,
-  signAndExecuteTransactionHeadless
-} from 'sui-svelte-dapp';
-
-// Get all available wallets
-const wallets = getAvailableWallets();
-console.log('Available wallets:', wallets);
-
-// Connect to a specific wallet
-const result = await connectToWallet(wallets[0]);
-if (result.success) {
-  console.log('Connected!', result.account.address);
-}
-
-// Or connect with automatic modal
-const result = await connectWithModalHeadless();
-```
-
-### Custom Wallet Selection UI
-
-```javascript
-import { getAvailableWallets, connectToWallet } from 'sui-svelte-dapp';
-
-function createCustomWalletList() {
-  const wallets = getAvailableWallets();
-  
-  wallets.forEach(wallet => {
-    const button = document.createElement('button');
-    button.innerHTML = `
-      <img src="${wallet.iconUrl}" alt="${wallet.name}">
-      ${wallet.name}
-    `;
-    
-    button.onclick = async () => {
-      const result = await connectToWallet(wallet);
-      if (result.success) {
-        console.log('Connected to:', wallet.name);
-        // Save connection state
-        window.currentWallet = {
-          account: result.account,
-          adapter: result.adapter
-        };
-      }
-    };
-    
-    document.body.appendChild(button);
-  });
-}
-```
-
-### Headless Transaction Signing
-
-```javascript
-import { 
-  signAndExecuteTransactionHeadless, 
-  signMessageHeadless 
-} from 'sui-svelte-dapp';
-
-// Sign a transaction
-const result = await signAndExecuteTransactionHeadless(
-  transaction, 
-  currentAccount, 
-  currentAdapter
-);
-
-// Sign a message
-const signature = await signMessageHeadless(
-  'Hello Sui!', 
-  currentAccount, 
-  currentAdapter
-);
-```
-
-### Available Headless Methods
-
-- `getAvailableWallets()` - List all installed wallets
-- `connectToWallet(wallet)` - Connect to specific wallet
-- `disconnectWallet(adapter)` - Disconnect from wallet
-- `connectWithModalHeadless()` - Connect with built-in modal
-- `openWalletSelectionModal()` - Open simple selection modal
-- `signAndExecuteTransactionHeadless()` - Sign transactions
-- `signMessageHeadless()` - Sign messages
-- `canSignMessageHeadless()` - Check message signing support
-
 ## Advanced Usage
 
 ### Custom Modal
@@ -481,29 +386,17 @@ import type { SuiSignAndExecuteTransactionOutput } from '@mysten/wallet-standard
 const handleTransaction = async (): Promise<SuiSignAndExecuteTransactionOutput> => {
   // Type-safe transaction handling
 };
-
-// Headless functions are also fully typed
-import { connectToWallet, getAvailableWallets } from 'sui-svelte-dapp';
-
-const wallets: IWallet[] = getAvailableWallets();
-const result = await connectToWallet(wallets[0]);
-// result.success: boolean
-// result.account?: WalletAccount
-// result.adapter?: IWalletAdapter
 ```
 
 ## Examples
 
 Check out the example files for complete working examples:
 
-### Component-based Examples
 - `/src/routes/+page.svelte` - Complete Svelte component example
 - `/examples/basic-usage.svelte` - Basic usage with components
 - `/examples/advanced-usage.svelte` - Advanced component usage
 
-### Headless Examples  
-- `/examples/headless-simple-usage.js` - Headless wallet functions
-- Complete examples with wallet connection, account display, transaction signing, error handling, and custom UI creation
+Complete examples include wallet connection, account display, transaction signing, error handling, and loading states.
 
 ## Contributing
 
@@ -556,12 +449,11 @@ pnpm run prepack
 ## Changelog
 
 ### v1.1.2
-- **NEW**: Headless wallet functions for custom UI
 - **BREAKING**: Removed Tailwind CSS dependency - now uses custom CSS
-- Added `getAvailableWallets()`, `connectToWallet()`, `connectWithModalHeadless()`
-- Added headless transaction signing methods
-- Better TypeScript support for headless functions
+- Improved modal styling with better animations and visual feedback
+- Better cross-browser compatibility
 - Performance improvements
+- Enhanced TypeScript definitions
 
 ### v1.0.0
 - Initial release
