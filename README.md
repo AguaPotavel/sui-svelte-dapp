@@ -16,11 +16,11 @@ A comprehensive Svelte library for building dApps on the Sui blockchain. This li
 ## Installation
 
 ```bash
-npm install sui-svelte-dapp-dapp
+npm install sui-svelte-dapp
 # or
-pnpm install sui-svelte-dapp-dapp
+pnpm install sui-svelte-dapp
 # or
-yarn add sui-svelte-dapp-dapp
+yarn add sui-svelte-dapp
 ```
 
 ### Peer Dependencies
